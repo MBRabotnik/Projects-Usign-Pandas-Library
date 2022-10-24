@@ -1,0 +1,31 @@
+#Petal Power Inventory
+
+import codecademylib3
+import pandas as pd
+
+#Load the data into a DataFrame
+inventory = pd.read_csv('inventory.csv')
+
+#Limit the table to the first 1o roes to check the products sold at Staten Island
+staten_island = inventory.head(10)
+products_sold = staten_island['product_description']
+
+#Request data where location is Brooklyn and the type of product type is seed
+seeds_request = inventory[(inventory.location == "Brooklyn") & (inventory.product_type == 'seeds')]
+#print(seeds_request)
+
+#Check if an item is in stock
+in_stock = inventory.apply(lambda row:True if row.quantity > 0 else False, axis=1)
+print(in_stock)
+
+#Check how valuable the current inventory is and insert as a new colum to the DataSet (inventory)
+inventory['total_value']= inventory.price * inventory.quantity
+
+#Combine to columns to create a full product description 
+combine_description = lambda row:\
+  '{} - {}'.format(row.product_type,
+                  row.product_description)
+
+#Add full product description to the DataSete
+inventory['full_description'] = inventory.apply(combine_description, axis= 1)
+print(inventory)
