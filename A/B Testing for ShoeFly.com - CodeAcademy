@@ -1,0 +1,48 @@
+# A/B Testing for ShoeFly.com
+import codecademylib3
+import pandas as pd
+
+#Create a dataset called ad_clicks
+ad_clicks = pd.read_csv('ad_clicks.csv')
+#print(ad_clicks.head())
+
+#Check which ad platform is getting you the most views
+most_used = ad_clicks.groupby('utm_source').user_id.count().reset_index()
+#print(most_used)
+
+#Adding a column to verify if a person clicked on the ad that was displayed 
+ad_clicks['is_click'] = ad_clicks.ad_click_timestamp.notnull()
+print(ad_clicks)
+
+#Verifying the percentage of people who clicked on ads from each utm_source.
+clicks_by_source = ad_clicks.groupby(['utm_source', 'is_click']).user_id.count().reset_index()
+
+clicks_pivot = clicks_by_source.pivot(
+  columns = 'is_click',
+  index = 'utm_source',
+  values = 'user_id'
+).reset_index()
+print(clicks_pivot)
+clicks_pivot['percent_clicked'] = (clicks_pivot[True] /
+   (clicks_pivot[True] + clicks_pivot[False]))
+print(clicks_pivot)
+
+#Analyzing an A/B Test: what ad was shown to the user Ad A or Ad B? Were approximately the same number of people shown both ads?
+checking_group =ad_clicks.groupby(['experimental_group','is_click']).user_id.count().reset_index()
+
+checking_group= checking_group.pivot(
+  columns= 'experimental_group',
+  index= 'is_click',
+  values ='user_id').reset_index()
+print(checking_group)
+
+a_clicks = ad_clicks[
+   ad_clicks.experimental_group
+   == 'A']
+b_clicks = ad_clicks[
+   ad_clicks.experimental_group
+   == 'B']
+
+#Calculates the percent of users who clicked on the ad by day.
+a_percent = a_clicks.groupby(['is_click', 'day']).apply(clicks_pivot['percent_clicked'] = (clicks_pivot[True] /(clicks_pivot[True] + clicks_pivot[False]))
+b_percent = b_clicks.groupby(['is_click', 'day']).apply(clicks_pivot['percent_clicked'] = (clicks_pivot[True] /(clicks_pivot[True] + clicks_pivot[False]))
